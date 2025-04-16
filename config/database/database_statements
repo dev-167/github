@@ -1,0 +1,101 @@
+-- DATABASE emplyee_db Version 1.0 DOCUMENTARY
+
+-- TABLE ROLES
+
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Eindeutige ID für jede Rolle
+    name VARCHAR(100) NOT NULL UNIQUE, -- Name der Rolle, z.B. "Admin", "Mitarbeiter"
+    description VARCHAR(255),          -- Beschreibung der Rolle (optional)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Erstellungszeitpunkt
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Letzte Änderung
+);
+
+-- TABLE USER
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Eindeutige ID für den Benutzer
+    name VARCHAR(255) NOT NULL,        -- Vollständiger Name des Mitarbeiters
+    email VARCHAR(255) NOT NULL UNIQUE,-- E-Mail-Adresse
+    password VARCHAR(255) NOT NULL,    -- Gehashtes Passwort
+    role_id INT NOT NULL,              -- Verweis auf die Rolle
+    position VARCHAR(255),             -- Jobbezeichnung
+    team VARCHAR(255),                 -- Team- oder Abteilungszugehörigkeit
+    phone VARCHAR(20),                 -- Telefonnummer
+    avatar VARCHAR(255),               -- URL zum Profilbild
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Erstellungszeitpunkt
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, -- Letzte Änderung
+    CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) -- Fremdschlüssel zur roles-Tabelle
+);
+
+-- TABLE tasks
+
+CREATE TABLE tasks(
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Eindeutige ID der Aufgabe.
+    title VARCHAR(255) NOT NULL, -- Titel der Aufgabe.
+    description TEXT NOT NULL, -- Beschreibung der Aufgabe.
+    assigned_to INT, -- Verweis auf den Mitarbeiter (users).
+    FOREIGN KEY(assigned_to) REFERENCES users(id) ON DELETE SET NULL,
+    status ENUM('open','done') NOT NULL DEFAULT 'open',  -- Status der Aufgabe (z. B. open, done).
+    due_date DATE NOT NULL, -- Fälligkeitsdatum
+    progress INT NOT NULL, -- Fortschritt in Prozent.
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Zeitstempel der Erstellung.
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Zeitstempel der letzten Änderung.
+)
+
+-- TABLE absence
+
+CREATE TABLE absences(
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Eindeutige ID der Abwesenheit.
+    user_id INT, -- Verweis auf den Mitarbeiter (users).
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL, -- Beginn der Abwesenheit.
+    start_date DATE NOT NULL, -- Beginn der Abwesenheit.
+    end_date DATE NOT NULL, -- Ende der Abwesenheit.
+    type ENUM('open','done') NOT NULL DEFAULT 'open', -- Typ (z. B. Urlaub, Krankheit, Elternzeit).
+    status ENUM('open','done') NOT NULL DEFAULT 'open', -- Status (z. B. pending, approved).
+    reason TEXT NOT NULL, -- Grund für die Abwesenheit (optional).
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Zeitstempel der Erstellung.
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Zeitstempel der letzten Änderung.
+)
+
+
+-- TABLE announcements
+
+CREATE TABLE announcements (
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Eindeutige ID der Mitteilung.
+    title VARCHAR(255) NOT NULL, -- Titel der Mitteilung.
+    content TEXT NOT NULL, -- Inhalt der Mitteilung.
+    posted_by INT, -- Verweis auf den Autor (users).
+    FOREIGN KEY(posted_by) REFERENCES users(id) ON DELETE SET NULL, 
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Zeitstempel der Erstellung.
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP -- Zeitstempel der letzten Änderung.
+)
+
+-- TABLE logs
+
+CREATE TABLE logs(
+    id INT AUTO_INCREMENT PRIMARY KEY, -- Eindeutige ID des Logs.
+    user_id INT, -- Verweis auf den Benutzer (users).
+    FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE SET NULL,
+    action VARCHAR(255) NOT NULL, -- Beschreibung der Aktion (z. B. Login).
+    ip_adress VARCHAR(255) NOT NULL, -- IP-Adresse des Nutzers.
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Zeitstempel der Aktion.
+)
+
+-- Optionale Tabellen
+
+-- TABLE teams
+
+CREATE TABLE teams(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    leader_id INT,
+    FOREIGN KEY(leader_id) REFERENCES users(id) ON DELETE SET NULL
+)
+
+-- TABLE permissions
+
+CREATE TABLE permissions(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL
+)

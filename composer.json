@@ -1,0 +1,16 @@
+{
+    "name": "patrickpollmanns/employee-portal",
+    "description": "This is my Project employee-portal",
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Patrick Sperlich"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}

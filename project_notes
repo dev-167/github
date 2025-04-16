@@ -1,0 +1,589 @@
+project / employee_portal / notes
+
+1. Projektidee: Was könnte das Mitarbeiter-Portal bieten?
+
+Funktionen, die du implementieren könntest:
+
+    Benutzerverwaltung:
+        Registrierung, Anmeldung und Rollen (z. B. Admin, Mitarbeiter).
+        Passwortrücksetzung (z. B. via E-Mail).
+    Mitarbeiterübersicht:
+        Liste aller Mitarbeiter mit Such- und Filterfunktionen.
+        Detailseite für jeden Mitarbeiter (Name, Position, Team, Kontaktdaten, etc.).
+    Urlaubs- oder Abwesenheitsverwaltung:
+        Beantragung von Urlaubstagen.
+        Anzeige des aktuellen Urlaubsstatus.
+    Aufgabenmanagement:
+        Aufgaben einem Mitarbeiter zuweisen.
+        Fortschrittsanzeige (z. B. in Prozent).
+    Dashboard:
+        Übersicht über Statistiken, z. B. Anzahl der Mitarbeiter, offene Aufgaben.
+    Nachrichten-/Mitteilungsfunktion:
+        Einfache Möglichkeit, interne Mitteilungen zu posten.
+    Sicherheitsfeatures:
+        Authentifizierung (z. B. über JWT).
+        Schutz vor SQL-Injection und Cross-Site-Scripting (XSS).
+
+#####################################################################################
+
+2. Technologie-Stack
+
+Da du PHP lernst, sind folgende Technologien sinnvoll:
+
+    Backend:
+        PHP mit einem Framework wie Laravel oder Symfony (empfohlen für modernes OOP).
+        Alternativ: Vanilla PHP für ein einfacheres Projekt, falls du Frameworks noch nicht kennst.
+    Datenbank:
+        MySQL oder MariaDB.
+    Frontend:
+        HTML, CSS (mit Bootstrap für responsives Design).
+        JavaScript (optional mit jQuery oder modernen Frameworks wie Vue.js für Interaktivität).
+    Versionierung:
+        Git (zum Hochladen auf GitHub oder GitLab).
+    Deployment (optional):
+        Nutze Plattformen wie Heroku, Vercel, oder Netlify, um dein Projekt online zu präsentieren.
+
+#####################################################################################
+
+3. Projektstruktur
+
+Organisiere dein Projekt, um es sauber und verständlich zu halten:
+
+    Ordnerstruktur:
+
+employee-portal/
+├── app/
+|       Controller/Controller.php
+|       Core/AbstractModel.php   
+|       Database/Connection.php  
+|       Model/Model.php
+├── public/
+|             css/
+|             js/ 
+|             index.php
+├── resources/
+├── resdatabase/ 
+├── restests/    
+├── resconfinf   
+|          database.php
+└── README.md
+
+CMS Struktur Erklärung:
+
+Model: 
+Zusammenfassung der Rolle der Model.php:
+
+    Verwaltet die Datenbankverbindung: Nutzt die zentrale Verbindung aus Connection.php.
+    Implementiert Standardfunktionen: CRUD-Operationen für Tabellen.
+    Erleichtert Wiederverwendung: Allgemeine Logik wird zentralisiert, spezifische Modelle erben diese.
+    Objektorientierter Datenbankzugriff: Ergebnisse aus der Datenbank werden als Objekte repräsentiert.
+
+Was macht ein Repository konkret?
+
+    Kapselt die Datenzugriffslogik
+        Die direkte Interaktion mit der Datenbank (SQL-Statements, PDO-Operationen) wird in das Repository ausgelagert.
+        Das Repository stellt der Applikation eine klar definierte Schnittstelle bereit, z. B. getAllUsers() oder findUserByEmail($email).
+
+    Entkoppelt die Logik
+        Das Modell bleibt schlank und konzentriert sich nur auf die Darstellung von Daten (z. B. als Objekt).
+        Die Logik, wie Daten gesucht, gefiltert oder komplexere Abfragen erstellt werden, liegt im Repository.
+
+    Bessere Testbarkeit
+        Da Repositories nur für Datenzugriffe zuständig sind, können sie einfacher getestet werden, z. B. durch Mocking der Datenbank.
+
+    Zentralisierung von Abfragen
+        Komplexe oder häufig genutzte Abfragen (z. B. Benutzer mit einer bestimmten Rolle finden) werden an einem Ort definiert und sind einfach wiederverwendbar.
+
+Ein Repository ist ein Design-Pattern, das eine zusätzliche Abstraktionsschicht zwischen der Datenbanklogik und der restlichen Applikation bereitstellt. Es dient dazu, den Zugriff auf die Datenbank zu organisieren und komplexe Logik von 
+den Modellen zu trennen.
+Was macht ein Repository konkret?
+
+    Kapselt die Datenzugriffslogik
+        Die direkte Interaktion mit der Datenbank (SQL-Statements, PDO-Operationen) wird in das Repository ausgelagert.
+        Das Repository stellt der Applikation eine klar definierte Schnittstelle bereit, z. B. getAllUsers() oder findUserByEmail($email).
+
+    Entkoppelt die Logik
+        Das Modell bleibt schlank und konzentriert sich nur auf die Darstellung von Daten (z. B. als Objekt).
+        Die Logik, wie Daten gesucht, gefiltert oder komplexere Abfragen erstellt werden, liegt im Repository.
+
+    Bessere Testbarkeit
+        Da Repositories nur für Datenzugriffe zuständig sind, können sie einfacher getestet werden, z. B. durch Mocking der Datenbank.
+
+    Zentralisierung von Abfragen
+        Komplexe oder häufig genutzte Abfragen (z. B. Benutzer mit einer bestimmten Rolle finden) werden an einem Ort definiert und sind einfach wiederverwendbar. 
+     
+
+Wie erleichtert ein Repository das Modell?
+
+    Trennung von Verantwortlichkeiten:
+    Das Modell beschreibt, wie ein Datensatz in deinem System aussieht (z. B. welche Eigenschaften es hat, Methoden zur Darstellung).
+    Das Repository kümmert sich darum, wie diese Daten aus der Datenbank geholt, gefiltert oder gespeichert werden.
+
+    Spezialisierte Repositories:
+    Für komplexe Logik oder spezifische Anforderungen kannst du eigene Repositories erstellen, die auf ein bestimmtes Modell abgestimmt sind, z. B.:
+        UserRepository
+        TaskRepository
+        RoleRepository
+
+
+Model (Entities)
+User
+Role,
+Task
+
+Repositories: 
+
+UserRepository - verwaltet Datenbankzugriffe für Benutzer: z. B. findByEmail, getAllUsers).
+TaskRepository - kümmert sich um Aufgaben (z. B. findTasksByStatus('open')).
+
+
+Controller
+
+Der Controller ruft die Methoden aus den Repositories auf, um mit Daten zu arbeiten, und übergibt die Ergebnisse an Views.
+
+
+
+Datenbankmodell: Entwirf ein Schema, z. B.:
+
+    Tabelle users (für Mitarbeiterdaten).
+    Tabelle roles (für Rechte und Rollen).
+    Tabelle tasks (für Aufgaben).
+
+#####################################################################################
+
+4. Präsentation auf GitHub
+
+    README.md: Erstelle eine ausführliche Dokumentation:
+        Projektbeschreibung: Was ist das Projekt? Warum hast du es gemacht?
+        Features: Beschreibe kurz die wichtigsten Funktionen.
+        Technologien: Welche Tools und Frameworks hast du genutzt?
+        Installationsanleitung: Schritte, wie man das Projekt lokal startet.
+        Screenshots: Zeige, wie die Anwendung aussieht.
+
+    Code-Kommentare: Schreibe saubere, gut kommentierte Codes, damit der Betrachter deine Logik versteht.
+
+    GitHub Pages: Falls du eine Demo bereitstellen möchtest, füge einen Link zur live laufenden Anwendung hinzu.
+
+#####################################################################################
+
+5. Zusatzideen für den Wow-Effekt
+
+    RESTful API:
+        Baue eine kleine API, die z. B. Mitarbeiterdaten bereitstellt.
+        Zeige, dass du moderne Entwicklungsprinzipien beherrschst.
+    Responsives Design:
+        Stelle sicher, dass das Portal auf Mobilgeräten gut aussieht.
+    Automatisierte Tests:
+        Zeige, dass du Unit- oder Integrationstests schreiben kannst (z. B. mit PHPUnit oder dem Laravel-Testframework).
+    Login mit OAuth:
+        Erlaube Login über Google, Facebook oder GitHub, um fortgeschrittene Authentifizierungskenntnisse zu demonstrieren.
+
+#####################################################################################
+
+6. Zeitmanagement
+
+    Planung:
+        Nutze ein Tool wie Trello oder Notion, um die Aufgaben zu organisieren.
+    Schrittweise Umsetzung:
+        Arbeite in kleinen, abgeschlossenen Schritten, z. B. erst Benutzerregistrierung, dann Mitarbeiterübersicht.
+
+#####################################################################################
+
+7. Warum ist das sinnvoll für Bewerbungen?
+
+    Zeigt praktisches Können: Ein eigenes Projekt zeigt oft mehr als reine Theorie.
+    Hebt dich von anderen ab: Viele Bewerber haben nur Zertifikate oder Standardprojekte.
+    GitHub-Profil: Recruiter können direkt deinen Code sehen und bewerten.
+
+
+
+
+CODE:
+
+1. User Model (app/Models/User.php)
+
+Das Modell repräsentiert die Daten eines Benutzers. Es bleibt schlank und enthält nur Methoden zur Datenrepräsentation.
+
+<?php
+
+namespace App\Models;
+
+use App\Core\AbstractModel;
+
+class User extends AbstractModel
+{
+    public $id;
+    public $name;
+    public $email;
+    public $role_id;
+    public $position;
+    public $team;
+    public $phone;
+    public $avatar;
+    public $created_at;
+    public $updated_at;
+
+    public function getFullName(): string
+    {
+        return $this->name;
+    }
+}
+
+2. User Repository (app/Repositories/UserRepository.php)
+
+Das Repository enthält alle Datenbankoperationen für die Benutzer.
+
+<?php
+
+namespace App\Repositories;
+
+use App\Models\User;
+use PDO;
+
+class UserRepository
+{
+    protected PDO $pdo;
+
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->query("SELECT * FROM users");
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(function ($data) {
+            $user = new User();
+            return $user->mapToObject($data);
+        }, $results);
+    }
+
+    public function findById(int $id): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($data) {
+            $user = new User();
+            return $user->mapToObject($data);
+        }
+
+        return null;
+    }
+
+    public function findByEmail(string $email): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($data) {
+            $user = new User();
+            return $user->mapToObject($data);
+        }
+
+        return null;
+    }
+
+    public function save(User $user): bool
+    {
+        if ($user->id) {
+            // Update existing user
+            $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET name = :name, email = :email, role_id = :role_id, position = :position, 
+                    team = :team, phone = :phone, avatar = :avatar, updated_at = CURRENT_TIMESTAMP
+                WHERE id = :id
+            ");
+            return $stmt->execute([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'position' => $user->position,
+                'team' => $user->team,
+                'phone' => $user->phone,
+                'avatar' => $user->avatar,
+            ]);
+        } else {
+            // Insert new user
+            $stmt = $this->pdo->prepare("
+                INSERT INTO users (name, email, role_id, position, team, phone, avatar, created_at) 
+                VALUES (:name, :email, :role_id, :position, :team, :phone, :avatar, CURRENT_TIMESTAMP)
+            ");
+            return $stmt->execute([
+                'name' => $user->name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'position' => $user->position,
+                'team' => $user->team,
+                'phone' => $user->phone,
+                'avatar' => $user->avatar,
+            ]);
+        }
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+}
+
+3. Controller Example (public/index.php)
+
+Hier ein Beispiel, wie du den Repository und das Modell verwendest.
+
+<?php
+
+require_once __DIR__ . '/../autoload.php';
+
+use App\Repositories\UserRepository;
+use App\Models\User;
+use App\Database\Connection;
+
+// Verbindung zur Datenbank herstellen
+$pdo = Connection::connect();
+
+// Repository instanziieren
+$userRepo = new UserRepository($pdo);
+
+// Einen neuen Benutzer erstellen
+$newUser = new User();
+$newUser->name = "Max Mustermann";
+$newUser->email = "max@example.com";
+$newUser->role_id = 2;
+$newUser->position = "Developer";
+$newUser->team = "Backend";
+$newUser->phone = "123456789";
+$newUser->avatar = "max.png";
+
+// Benutzer speichern
+if ($userRepo->save($newUser)) {
+    echo "Neuer Benutzer gespeichert!<br>";
+}
+
+// Benutzer abrufen
+$user = $userRepo->findById(1);
+if ($user) {
+    echo "Benutzer gefunden: " . $user->getFullName() . "<br>";
+}
+
+// Alle Benutzer anzeigen
+$users = $userRepo->findAll();
+foreach ($users as $user) {
+    echo "Benutzer: " . $user->getFullName() . " (" . $user->email . ")<br>";
+}
+
+// Benutzer löschen
+if ($userRepo->delete(1)) {
+    echo "Benutzer gelöscht.<br>";
+}
+
+Natürlich! Hier ist ein Beispiel für die Verwendung von Repositories in deinem CMS-Projekt mit den gegebenen Datenbanktabellen.
+
+Ich zeige dir ein Beispiel für das Modell User, ein zugehöriges Repository UserRepository, und wie diese in einem Controller verwendet werden können.
+1. User Model (app/Models/User.php)
+
+Das Modell repräsentiert die Daten eines Benutzers. Es bleibt schlank und enthält nur Methoden zur Datenrepräsentation.
+
+<?php
+
+namespace App\Models;
+
+use App\Core\AbstractModel;
+
+class User extends AbstractModel
+{
+    public $id;
+    public $name;
+    public $email;
+    public $role_id;
+    public $position;
+    public $team;
+    public $phone;
+    public $avatar;
+    public $created_at;
+    public $updated_at;
+
+    public function getFullName(): string
+    {
+        return $this->name;
+    }
+}
+
+2. User Repository (app/Repositories/UserRepository.php)
+
+Das Repository enthält alle Datenbankoperationen für die Benutzer.
+
+<?php
+
+namespace App\Repositories;
+
+use App\Models\User;
+use PDO;
+
+class UserRepository
+{
+    protected PDO $pdo;
+
+    public function __construct(PDO $pdo)
+    {
+        $this->pdo = $pdo;
+    }
+
+    public function findAll(): array
+    {
+        $stmt = $this->pdo->query("SELECT * FROM users");
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return array_map(function ($data) {
+            $user = new User();
+            return $user->mapToObject($data);
+        }, $results);
+    }
+
+    public function findById(int $id): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE id = :id");
+        $stmt->execute(['id' => $id]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($data) {
+            $user = new User();
+            return $user->mapToObject($data);
+        }
+
+        return null;
+    }
+
+    public function findByEmail(string $email): ?User
+    {
+        $stmt = $this->pdo->prepare("SELECT * FROM users WHERE email = :email");
+        $stmt->execute(['email' => $email]);
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($data) {
+            $user = new User();
+            return $user->mapToObject($data);
+        }
+
+        return null;
+    }
+
+    public function save(User $user): bool
+    {
+        if ($user->id) {
+            // Update existing user
+            $stmt = $this->pdo->prepare("
+                UPDATE users 
+                SET name = :name, email = :email, role_id = :role_id, position = :position, 
+                    team = :team, phone = :phone, avatar = :avatar, updated_at = CURRENT_TIMESTAMP
+                WHERE id = :id
+            ");
+            return $stmt->execute([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'position' => $user->position,
+                'team' => $user->team,
+                'phone' => $user->phone,
+                'avatar' => $user->avatar,
+            ]);
+        } else {
+            // Insert new user
+            $stmt = $this->pdo->prepare("
+                INSERT INTO users (name, email, role_id, position, team, phone, avatar, created_at) 
+                VALUES (:name, :email, :role_id, :position, :team, :phone, :avatar, CURRENT_TIMESTAMP)
+            ");
+            return $stmt->execute([
+                'name' => $user->name,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'position' => $user->position,
+                'team' => $user->team,
+                'phone' => $user->phone,
+                'avatar' => $user->avatar,
+            ]);
+        }
+    }
+
+    public function delete(int $id): bool
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM users WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
+}
+
+3. Controller Example (public/index.php)
+
+Hier ein Beispiel, wie du den Repository und das Modell verwendest.
+
+<?php
+
+require_once __DIR__ . '/../autoload.php';
+
+use App\Repositories\UserRepository;
+use App\Models\User;
+use App\Database\Connection;
+
+// Verbindung zur Datenbank herstellen
+$pdo = Connection::connect();
+
+// Repository instanziieren
+$userRepo = new UserRepository($pdo);
+
+// Einen neuen Benutzer erstellen
+$newUser = new User();
+$newUser->name = "Max Mustermann";
+$newUser->email = "max@example.com";
+$newUser->role_id = 2;
+$newUser->position = "Developer";
+$newUser->team = "Backend";
+$newUser->phone = "123456789";
+$newUser->avatar = "max.png";
+
+// Benutzer speichern
+if ($userRepo->save($newUser)) {
+    echo "Neuer Benutzer gespeichert!<br>";
+}
+
+// Benutzer abrufen
+$user = $userRepo->findById(1);
+if ($user) {
+    echo "Benutzer gefunden: " . $user->getFullName() . "<br>";
+}
+
+// Alle Benutzer anzeigen
+$users = $userRepo->findAll();
+foreach ($users as $user) {
+    echo "Benutzer: " . $user->getFullName() . " (" . $user->email . ")<br>";
+}
+
+// Benutzer löschen
+if ($userRepo->delete(1)) {
+    echo "Benutzer gelöscht.<br>";
+}
+
+4. Vorteile dieses Ansatzes
+
+    Saubere Trennung von Logik
+        Das Modell (User) bleibt leichtgewichtig und dient nur zur Repräsentation der Daten.
+        Die Datenbankoperationen sind vollständig im Repository (UserRepository) gekapselt.
+
+    Einfacher Ausbau und Wiederverwendung
+        Neue Funktionen wie komplexe Abfragen können einfach im Repository ergänzt werden.
+
+    Testbarkeit
+        Repositories können einfach getestet werden, indem die PDO-Datenbankverbindung simuliert wird.
+
+
+Vermerk  :  TODO
+
+Funktionen für das Dashboard erst in die Variante von der Schulung testen via GET
+
+Danach versuchen mit dem Tipp von ChatGPT in Post umzuwandeln um mehr sicherheit zu gewährleisten
