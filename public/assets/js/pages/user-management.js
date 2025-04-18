@@ -1,5 +1,22 @@
 document.addEventListener("DOMContentLoaded", function() {
     
+    // Umschalten von Suche und Neuer User Buttons (Ein-/Ausblenden)
+    const searchBtn = document.getElementById("toggle-search");
+    const newUserBtn = document.getElementById("toggle-new-user");
+    const searchSection = document.getElementById("search-section");
+    const newUserSection = document.getElementById("new-user-section");
+
+    searchBtn.addEventListener("click", function() {
+        searchSection.classList.toggle("d-none");
+        newUserSection.classList.add("d-none");
+    });
+
+    newUserBtn.addEventListener("click", function() {
+        newUserSection.classList.toggle("d-none");
+        searchSection.classList.add("d-none");
+    });
+
+
     let lastClickedEditBtn = null;
 
     // Benutzer löschen
