@@ -33,77 +33,41 @@ class AdminController extends AbstractController
 
     public function saveUserSettings()
     {
-        // Benutzer-Daten abrufen
-        $user = $this->adminService->showUser();
-
-
-        // Debugging: Benutzer anzeigen
-        if (!$user || empty($user->id)) {
-            echo "<pre>";
-            print_r($user);
-            echo "</pre>";
-            //$error("Fehler: Benutzer nicht gefunden oder nicht eingeloggt.");
-            // Container-Instanz erhalten (abhängig davon, wie du deinen Container initialisierst)
-            $container = new \App\Core\Container();  
-
-            // LoginController über den Container holen
-            $loginController = $container->make("loginController");  
-
-            // Logout-Funktion aufrufen
-            $loginController->logout();
-
-            return;
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            die("Fehler: Das Formular wurde nicht per POST gesendet.");
+        }
+    
+        if (empty($_POST)) {
+            die("Fehler: Keine POST-Daten erhalten.");
         }
 
-        $userId = $user->id;
+         // Erstelle den User aus den Formular-Daten
+        $user = new UserModel([
+            'id' => (int)($_POST['id'] ?? 0),
+            'name' => $_POST['name'] ?? '',
+            'surname' => $_POST['surname'] ?? '',
+            'email' => $_POST['email'] ?? '',
+            'phone' => $_POST['phone'] ?? ''
+        ]);
 
-        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            $this->render("user/settings", ['user' => $user]);
-            return;
+        // Sicherheitscheck – ist ID vorhanden?
+        if (empty($user->id)) {
+            die("Fehler: Benutzer-ID fehlt.");
         }
 
-        if($_SERVER['REQUEST_METHOD'] !== 'POST')
-        {
-            die("Feher: Das Formular wurde nicht per POST gesendet.");
-        }
-
-        if(empty($_POST))
-        {
-            die("Fehler: Keine POST_Daten erhalten.");
-        }
-
-        // UserModel-Objekt erstellen
-        $user = new UserModel();
-        // Unsere Einträge werden aktuallisiert mit den eingegebenen Daten aus den input feldern aus der $_POST[]
-        $user->id = $userId;
-        $user->name = $_POST['name'] ?? '';
-        $user->surname = $_POST['surname'] ?? '';
-        $user->email = $_POST['email'] ?? '';
-        $user->phone = $_POST['phone'] ?? '';
-        //print_r($user);
-        // if (!empty($_POST['password'])) {
-        //     $user->password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-        // } else {
-        //     $user->password = $this->dashboardService->getUserPassword($userId);
-        // }
-
-        // Speichern der Benutzereinstellung
-        $result = $this->adminService->saveSettings($user);
-
-        if(!$result)
-        {
+        // Jetzt speichern
+        try {
+            $this->adminService->saveSettings($user);
             echo "Änderung erfolgreich gespeichert!";
+        } catch (\Exception $e) {
+            echo "Fehler beim Speichern der Änderung: " . $e->getMessage();
         }
-        else
-        {
-            echo "Fehler beim Speichern der Änderung.";
-        }
-        
-        // Die Render-Funktion aufrufen;
-        $this->render("user/settings",[
+
+        // Benutzer nochmal laden für Anzeige
+        $this->render("user/settings", [
             'user' => $user,
         ]);
-    }
+        }
 
     public function addNewUser()
     {

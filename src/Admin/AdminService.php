@@ -16,10 +16,7 @@ class AdminService
 
     public function saveSettings(UserModel $user)
     {
-
-        var_dump($user->id, $user->email);
-        die();
-
+        
         // Sicher stellen, dass $user->id den Wert des Benutzers hat
         if (!$user->id) {
             throw new \Exception("Fehler: Benutzer-ID fehlt.");

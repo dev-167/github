@@ -22,6 +22,7 @@ employee_db (1.0)
         //var_dump(password_hash("Franz Beispiel12",PASSWORD_DEFAULT));
         // var_dump(password_hash("admin123$",PASSWORD_DEFAULT));
         ot0192939812, tim.obiant@outlook.com
+        admin321 admin2@outlook.com
 
     Mails:
         findus@example.com
